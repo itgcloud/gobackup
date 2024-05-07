@@ -1,3 +1,4 @@
+version: 2
 builds:
   - binary: gobackup
     env:
@@ -27,7 +28,6 @@ brews:
     commit_author:
       name: Janos Miko
       email: info@janosmiko.com
-    folder: Formula
     description: GoBackup
     license: MIT
     skip_upload: "false"

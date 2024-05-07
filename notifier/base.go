@@ -104,13 +104,15 @@ func notify(model config.ModelConfig, title, message string, notifyType int) {
 
 func Success(model config.ModelConfig) {
 	title := fmt.Sprintf("[GoBackup] OK: Backup *%s* successful", model.Name)
-	if model.Notifiers["common"].Viper.GetString("title_success") != "" {
-		title = model.Notifiers["common"].Viper.GetString("title_success")
-	}
-
 	message := fmt.Sprintf("Backup of *%s* completed successfully at %s", model.Name, time.Now().Local().Format(time.DateTime))
-	if model.Notifiers["common"].Viper.GetString("message_success") != "" {
-		message = model.Notifiers["common"].Viper.GetString("message_success")
+	if c, ok := model.Notifiers["common"]; ok {
+		if c.Viper.GetString("title_success") != "" {
+			title = c.Viper.GetString("title_success")
+		}
+
+		if c.Viper.GetString("message_success") != "" {
+			message = c.Viper.GetString("message_success")
+		}
 	}
 
 	notify(model, title, message, notifyTypeSuccess)
@@ -118,13 +120,15 @@ func Success(model config.ModelConfig) {
 
 func Failure(model config.ModelConfig, reason string) {
 	title := fmt.Sprintf("[GoBackup] ERROR: Backup *%s* failed", model.Name)
-	if model.Notifiers["common"].Viper.GetString("title_failure") != "" {
-		title = model.Notifiers["common"].Viper.GetString("title_failure")
-	}
-
 	message := fmt.Sprintf("Backup of *%s* failed at %s:\n----------------------------------------------\n%s", model.Name, time.Now().Local().Format(time.DateTime), reason)
-	if model.Notifiers["common"].Viper.GetString("message_failure") != "" {
-		message = model.Notifiers["common"].Viper.GetString("message_failure")
+	if c, ok := model.Notifiers["common"]; ok {
+		if c.Viper.GetString("title_failure") != "" {
+			title = c.Viper.GetString("title_failure")
+		}
+
+		if c.Viper.GetString("message_failure") != "" {
+			message = c.Viper.GetString("message_failure")
+		}
 	}
 
 	notify(model, title, message, notifyTypeFailure)
