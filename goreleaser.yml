@@ -17,3 +17,16 @@ archives:
     format: tar.gz
 release:
   prerelease: auto
+brews:
+  - repository:
+      owner: itgcloud
+      name: homebrew-tap
+      token: "{{ .Env.GITHUB_TOKEN }}"
+    name: gobackup
+    commit_author:
+      name: Janos Miko
+      email: info@janosmiko.com
+    folder: Formula
+    description: GoBackup
+    license: MIT
+    skip_upload: "false"
