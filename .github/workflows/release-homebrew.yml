@@ -12,4 +12,4 @@ jobs:
         with:
           formula-name: gobackup
         env:
-          COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
+          COMMITTER_TOKEN: ${{ secrets.RELEASE_TOKEN }}
