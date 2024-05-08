@@ -11,5 +11,6 @@ jobs:
       - uses: mislav/bump-homebrew-formula-action@v3
         with:
           formula-name: gobackup
+          homebrew-tap: itgcloud/homebrew-tap
         env:
           COMMITTER_TOKEN: ${{ secrets.RELEASE_TOKEN }}
