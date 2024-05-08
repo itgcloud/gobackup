@@ -1,7 +1,7 @@
 # gobackup config example
 # -----------------------
 # Put this file in follow place:
-# ~/.gobackup/gobackup.yml or /etc/gobackup/gobackup.yml
+# ~/.itgcloud/gobackup.yml or /etc/itgcloud/gobackup.yml
 web:
   username: gobackup
   password: 123456

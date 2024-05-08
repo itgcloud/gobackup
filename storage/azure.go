@@ -11,8 +11,8 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob/sas"
 
-	"github.com/gobackup/gobackup/helper"
-	"github.com/gobackup/gobackup/logger"
+	"github.com/itgcloud/gobackup/helper"
+	"github.com/itgcloud/gobackup/logger"
 )
 
 // Azure - Microsoft Azure Blob Storage

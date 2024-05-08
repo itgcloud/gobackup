@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gobackup/gobackup/config"
+	"github.com/itgcloud/gobackup/config"
 	"github.com/longbridgeapp/assert"
 )
 

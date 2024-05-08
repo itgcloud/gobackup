@@ -30,5 +30,5 @@ We have a `Makefile` provided some commands:
 ## Release a new version
 
 1. Create a tag named `vX.Y.Z` and push tag, then GitHub Actions will release it.
-2. Write a release note for descrbe this version to [GitHub Releases](https://github.com/gobackup/gobackup/releases).
-3. Makesure to update the [Website](https://github.com/gobackup/gobackup.github.io) doc.
+2. Write a release note for descrbe this version to [GitHub Releases](https://github.com/itgcloud/gobackup/releases).
+3. Makesure to update the [Website](https://github.com/itgcloud/gobackup.github.io) doc.

@@ -9,7 +9,7 @@ git push origin v2.5.1
 
 After the GitHub Actions finished, the new version will be released to GitHub Releases.
 
-https://github.com/gobackup/gobackup/releases
+https://github.com/itgcloud/gobackup/releases
 
 Edit the latest release, and add the release note.
 
@@ -19,7 +19,7 @@ The GitHub Actions also have a step to release to Homebrew.
 
 But there may have a problem, the Homebrew Core repo may not update the formula.
 
-So it need visit: https://github.com/huacnlee/homebrew-core
+So it need visit: https://github.com/itgcloud/homebrew-core
 
 And click `Sync Fork` button, then click `Update Branch` button to update the formula.
 

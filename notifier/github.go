@@ -39,7 +39,7 @@ func (issue githubIssue) commentURL() string {
 }
 
 // type: github
-// url: https://github.com/gobackup/gobackup/issues/111
+// url: https://github.com/itgcloud/gobackup/issues/111
 // access_token: xxxxxxxxxx
 func NewGitHub(base *Base) *Webhook {
 	return &Webhook{

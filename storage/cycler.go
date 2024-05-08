@@ -7,9 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gobackup/gobackup/config"
-	"github.com/gobackup/gobackup/helper"
-	"github.com/gobackup/gobackup/logger"
+	"github.com/itgcloud/gobackup/config"
+	"github.com/itgcloud/gobackup/helper"
+	"github.com/itgcloud/gobackup/logger"
 )
 
 type PackageList []Package

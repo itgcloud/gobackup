@@ -12,14 +12,15 @@ import (
 
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
-	"github.com/gobackup/gobackup/config"
-	"github.com/gobackup/gobackup/logger"
-	"github.com/gobackup/gobackup/model"
-	"github.com/gobackup/gobackup/storage"
 	"github.com/stoicperlman/fls"
+
+	"github.com/itgcloud/gobackup/config"
+	"github.com/itgcloud/gobackup/logger"
+	"github.com/itgcloud/gobackup/model"
+	"github.com/itgcloud/gobackup/storage"
 )
 
-//go:embed dist
+//go:embed src
 var staticFS embed.FS
 var logFile *os.File
 

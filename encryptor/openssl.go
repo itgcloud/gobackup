@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gobackup/gobackup/helper"
+	"github.com/itgcloud/gobackup/helper"
 )
 
 // OpenSSL encryptor for use openssl aes-256-cbc

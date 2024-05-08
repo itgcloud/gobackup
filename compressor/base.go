@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/gobackup/gobackup/config"
-	"github.com/gobackup/gobackup/logger"
+	"github.com/itgcloud/gobackup/config"
+	"github.com/itgcloud/gobackup/logger"
 	"github.com/spf13/viper"
 )
 

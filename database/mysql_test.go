@@ -1,7 +1,7 @@
 package database
 
 import (
-	"github.com/gobackup/gobackup/config"
+	"github.com/itgcloud/gobackup/config"
 	"github.com/spf13/viper"
 
 	// "github.com/spf13/viper"

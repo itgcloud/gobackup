@@ -14,8 +14,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 
-	"github.com/gobackup/gobackup/helper"
-	"github.com/gobackup/gobackup/logger"
+	"github.com/itgcloud/gobackup/helper"
+	"github.com/itgcloud/gobackup/logger"
 )
 
 // S3 - Amazon S3 storage
@@ -294,7 +294,7 @@ func (s *S3) upload(fileKey string) (err error) {
 
 		// Only present storage_class when it is set.
 		// Some storage backend may not support storage_class.
-		// https://github.com/gobackup/gobackup/issues/183
+		// https://github.com/itgcloud/gobackup/issues/183
 		if len(s.storageClass) > 0 {
 			input.StorageClass = aws.String(s.storageClass)
 		}
@@ -354,7 +354,7 @@ func (s *S3) list(parent string) ([]FileItem, error) {
 
 		// Only present ContinuationToken when it is set.
 		// Some S3 compatible storage like MinIO will raise error when ContinuationToken is empty.
-		// https://github.com/gobackup/gobackup/issues/179
+		// https://github.com/itgcloud/gobackup/issues/179
 		if len(continueToken) > 0 {
 			input.ContinuationToken = aws.String(continueToken)
 		}

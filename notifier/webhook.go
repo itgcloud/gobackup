@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/gobackup/gobackup/logger"
+	"github.com/itgcloud/gobackup/logger"
 )
 
 type Webhook struct {

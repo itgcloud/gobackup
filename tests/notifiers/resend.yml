@@ -15,5 +15,5 @@ models:
       resend:
         type: resend
         from: notifier@gobackup.github.io
-        to: huacnlee@gmail.com
+        to: itgcloud@gmail.com
         token: $RESEND_API_KEY

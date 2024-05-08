@@ -5,9 +5,9 @@ import (
 	"path"
 	"path/filepath"
 
-	"github.com/gobackup/gobackup/config"
-	"github.com/gobackup/gobackup/helper"
-	"github.com/gobackup/gobackup/logger"
+	"github.com/itgcloud/gobackup/config"
+	"github.com/itgcloud/gobackup/helper"
+	"github.com/itgcloud/gobackup/logger"
 )
 
 // Run archive
@@ -23,29 +23,38 @@ func Run(model config.ModelConfig) error {
 		return err
 	}
 
+	opts, err := options(model)
+	if err != nil {
+		return err
+	}
+
+	_, err = helper.Exec("tar", opts...)
+	return err
+}
+
+func options(model config.ModelConfig) (opts []string, err error) {
 	includes := model.Archive.GetStringSlice("includes")
 	includes = cleanPaths(includes)
+
+	if len(includes) == 0 {
+		return nil, fmt.Errorf("archive.includes have no config")
+	}
+
+	logger.Info("=> includes", len(includes), "rules")
 
 	excludes := model.Archive.GetStringSlice("excludes")
 	excludes = cleanPaths(excludes)
 
-	if len(includes) == 0 {
-		return fmt.Errorf("archive.includes have no config")
-	}
-	logger.Info("=> includes", len(includes), "rules")
-
-	opts := options(model.DumpPath, excludes, includes)
-
-	_, err := helper.Exec("tar", opts...)
-	return err
-}
-
-func options(dumpPath string, excludes, includes []string) (opts []string) {
-	tarPath := path.Join(dumpPath, "archive.tar")
+	tarPath := path.Join(model.DumpPath, "archive.tar")
 	if helper.IsGnuTar {
 		opts = append(opts, "--ignore-failed-read")
 	}
-	opts = append(opts, "-cPf", tarPath)
+
+	additionalArguments := model.Archive.GetStringSlice("additional_arguments")
+	opts = append(opts, "-cP")
+	opts = append(opts, additionalArguments...)
+	opts = append(opts, "-f")
+	opts = append(opts, tarPath)
 
 	for _, exclude := range excludes {
 		opts = append(opts, "--exclude="+filepath.Clean(exclude))
@@ -53,7 +62,7 @@ func options(dumpPath string, excludes, includes []string) (opts []string) {
 
 	opts = append(opts, includes...)
 
-	return opts
+	return opts, nil
 }
 
 func cleanPaths(paths []string) (results []string) {
