@@ -9,6 +9,7 @@ import (
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob"
+	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob/blob"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob/sas"
 
 	"github.com/itgcloud/gobackup/helper"
@@ -170,5 +171,9 @@ func (s *Azure) download(fileKey string) (string, error) {
 	containerClient := s.client.ServiceClient().NewContainerClient(s.container)
 	blobClient := containerClient.NewBlobClient(fileKey)
 
-	return blobClient.GetSASURL(sas.BlobPermissions{Read: true}, time.Now(), time.Now().Add(time.Hour*1))
+	t := time.Now().Add(time.Hour * 1)
+	opts := &blob.GetSASURLOptions{
+		StartTime: &t,
+	}
+	return blobClient.GetSASURL(sas.BlobPermissions{Read: true}, time.Now(), opts)
 }
