@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/spf13/viper"
+
 	"github.com/itgcloud/gobackup/config"
 	"github.com/itgcloud/gobackup/logger"
-	"github.com/spf13/viper"
 )
 
 type Base struct {
@@ -70,8 +71,15 @@ func newNotifier(name string, config config.SubConfig) (Notifier, *Base, error) 
 func notify(model config.ModelConfig, title, message string, notifyType int) {
 	logger := logger.Tag("Notifier")
 
+	// remove common from notifiers
+	newNotifiers := map[string]config.SubConfig{}
+	for k, v := range model.Notifiers {
+		newNotifiers[k] = v
+	}
+	delete(newNotifiers, "common")
+
 	logger.Infof("Running %d Notifiers", len(model.Notifiers))
-	for name, config := range model.Notifiers {
+	for name, config := range newNotifiers {
 		notifier, base, err := newNotifier(name, config)
 		if err != nil {
 			logger.Error(err)
@@ -95,14 +103,29 @@ func notify(model config.ModelConfig, title, message string, notifyType int) {
 }
 
 func Success(model config.ModelConfig) {
-	title := fmt.Sprintf("[GoBackup] OK: Backup %s has successfully", model.Name)
-	message := fmt.Sprintf("Backup of %s completed successfully at %s", model.Name, time.Now().Local())
+	title := fmt.Sprintf("[GoBackup] OK: Backup *%s* successful", model.Name)
+	if model.Notifiers["common"].Viper.GetString("title_success") != "" {
+		title = model.Notifiers["common"].Viper.GetString("title_success")
+	}
+
+	message := fmt.Sprintf("Backup of *%s* completed successfully at %s", model.Name, time.Now().Local())
+	if model.Notifiers["common"].Viper.GetString("message_success") != "" {
+		message = model.Notifiers["common"].Viper.GetString("message_success")
+	}
+
 	notify(model, title, message, notifyTypeSuccess)
 }
 
 func Failure(model config.ModelConfig, reason string) {
-	title := fmt.Sprintf("[GoBackup] Err: Backup %s has failed", model.Name)
-	message := fmt.Sprintf("Backup of %s failed at %s:\n\n%s", model.Name, time.Now().Local(), reason)
+	title := fmt.Sprintf("[GoBackup] ERROR: Backup *%s* failed", model.Name)
+	if model.Notifiers["common"].Viper.GetString("title_failure") != "" {
+		title = model.Notifiers["common"].Viper.GetString("title_failure")
+	}
+
+	message := fmt.Sprintf("Backup of *%s* failed at %s:\n----------------------------------------------\n%s", model.Name, time.Now().Local(), reason)
+	if model.Notifiers["common"].Viper.GetString("message_failure") != "" {
+		message = model.Notifiers["common"].Viper.GetString("message_failure")
+	}
 
 	notify(model, title, message, notifyTypeFailure)
 }
