@@ -20,7 +20,7 @@ import (
 	"github.com/itgcloud/gobackup/storage"
 )
 
-//go:embed src
+//go:embed dist
 var staticFS embed.FS
 var logFile *os.File
 
