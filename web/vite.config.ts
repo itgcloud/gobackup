@@ -3,7 +3,9 @@ import { defineConfig } from 'vite';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+      react(),
+  ],
   server: {
     port: 3000,
     proxy: {
@@ -12,5 +14,15 @@ export default defineConfig({
         ws: true,
       },
     },
+  },
+  // base: "/",
+  build: {
+      rollupOptions: {
+          output: {
+              entryFileNames: `assets/[name].js`,
+              chunkFileNames: `assets/[name].js`,
+              assetFileNames: `assets/[name].[ext]`
+          }
+      }
   },
 });

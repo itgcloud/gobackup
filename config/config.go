@@ -41,6 +41,7 @@ type WebConfig struct {
 	Port           string
 	Username       string
 	Password       string
+	BasePath       string
 	DisablePerform bool
 }
 
@@ -228,11 +229,13 @@ func loadConfig() error {
 	Web = WebConfig{}
 	viper.SetDefault("web.host", "127.0.0.1")
 	viper.SetDefault("web.port", 2703)
+	viper.SetDefault("web.base_path", "")
 	viper.SetDefault("web.disable_perform", false)
 	Web.Host = viper.GetString("web.host")
 	Web.Port = viper.GetString("web.port")
 	Web.Username = viper.GetString("web.username")
 	Web.Password = viper.GetString("web.password")
+	Web.BasePath = viper.GetString("web.base_path")
 	Web.DisablePerform = viper.GetBool("web.disable_perform")
 
 	UpdatedAt = time.Now()

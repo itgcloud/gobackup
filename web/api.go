@@ -2,12 +2,16 @@ package web
 
 import (
 	"bufio"
+	"bytes"
 	"embed"
 	"fmt"
+	"html/template"
 	"io"
 	"io/fs"
 	"net/http"
 	"os"
+	"strings"
+	txtTemplate "text/template"
 	"time"
 
 	"github.com/gin-contrib/static"
@@ -58,7 +62,7 @@ func StartHTTP(version string) (err error) {
 	}
 	defer logFile.Close()
 
-	logger.Infof("Starting API server on port http://%s:%s", config.Web.Host, config.Web.Port)
+	logger.Infof("Starting API server on port http://%s:%s%s", config.Web.Host, config.Web.Port, config.Web.BasePath)
 
 	if os.Getenv("GO_ENV") == "dev" {
 		go func() {
@@ -82,6 +86,7 @@ func StartHTTP(version string) (err error) {
 
 	fe, _ := fs.Sub(staticFS, "dist")
 	embedFs := embedFileSystem{http.FS(fe), true}
+	r.Use(RemoveBasePathMiddleware())
 	r.Use(static.Serve("/", embedFs))
 	r.NoRoute(func(c *gin.Context) {
 		c.FileFromFS("/", embedFs)
@@ -93,7 +98,7 @@ func StartHTTP(version string) (err error) {
 func setupRouter(version string) *gin.Engine {
 	r := gin.Default()
 
-	r.GET("/status", func(c *gin.Context) {
+	r.GET(fmt.Sprintf("%s/status", config.Web.BasePath), func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "GoBackup is running.",
 			"version": version,
@@ -114,7 +119,40 @@ func setupRouter(version string) *gin.Engine {
 
 	})
 
-	group := r.Group("/api")
+	t, err := loadTemplate()
+	if err != nil {
+		panic(err)
+	}
+	r.SetHTMLTemplate(t)
+
+	txtT, err := loadTextTemplate()
+	if err != nil {
+		panic(err)
+	}
+
+	r.GET(fmt.Sprintf("%s/", config.Web.BasePath), func(c *gin.Context) {
+		buf := &bytes.Buffer{}
+		_ = t.ExecuteTemplate(buf, "index.html", nil)
+		c.Data(http.StatusOK, "text/html", []byte(strings.ReplaceAll(buf.String(), "/assets/", fmt.Sprintf("%s/assets/", config.Web.BasePath))))
+	})
+	r.GET(fmt.Sprintf("%s/assets/index.css", config.Web.BasePath), func(c *gin.Context) {
+		buf := &bytes.Buffer{}
+		_ = txtT.ExecuteTemplate(buf, "index.css", nil)
+		c.Data(http.StatusOK, "text/css", []byte(strings.ReplaceAll(buf.String(), "/assets/", fmt.Sprintf("%s/assets/", config.Web.BasePath))))
+	})
+	r.GET(fmt.Sprintf("%s/assets/index.js", config.Web.BasePath), func(c *gin.Context) {
+		buf := &bytes.Buffer{}
+		err = txtT.ExecuteTemplate(buf, "index.js", nil)
+		data := strings.ReplaceAll(buf.String(), "/assets/", fmt.Sprintf("%s/assets/", config.Web.BasePath))
+		data = strings.ReplaceAll(data, `path:"/"`, fmt.Sprintf(`path:"%s/"`, config.Web.BasePath))
+		data = strings.ReplaceAll(data, `/api`, fmt.Sprintf(`%s/api`, config.Web.BasePath))
+		data = strings.ReplaceAll(data, `backTo:t="/"`, fmt.Sprintf(`backTo:t="%s/"`, config.Web.BasePath))
+		data = strings.ReplaceAll(data, `backTo:"/"`, fmt.Sprintf(`backTo:"%s/"`, config.Web.BasePath))
+		data = strings.ReplaceAll(data, `/browser`, fmt.Sprintf(`%s/browser`, config.Web.BasePath))
+		c.Data(http.StatusOK, "application/javascript", []byte(data))
+	})
+
+	group := r.Group(config.Web.BasePath + "/api")
 	group.GET("/config", getConfig)
 	group.GET("/list", list)
 	group.GET("/download", download)
@@ -123,6 +161,14 @@ func setupRouter(version string) *gin.Engine {
 	}
 	group.GET("/log", log)
 	return r
+}
+
+func loadTemplate() (*template.Template, error) {
+	return template.New("").ParseFS(staticFS, "dist/*.html")
+}
+
+func loadTextTemplate() (*txtTemplate.Template, error) {
+	return txtTemplate.New("").ParseFS(staticFS, "dist/assets/*.css", "dist/assets/*.js")
 }
 
 // GET /api/config
@@ -261,4 +307,11 @@ func tailFile() chan string {
 	}()
 
 	return out_chan
+}
+
+func RemoveBasePathMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Request.URL.Path = strings.TrimPrefix(c.Request.URL.Path, config.Web.BasePath)
+		c.Next()
+	}
 }
