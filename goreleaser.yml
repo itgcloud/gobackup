@@ -17,6 +17,7 @@ archives:
     format: tar.gz
 release:
   prerelease: auto
+  replace_existing_artifacts: true
 brews:
   - repository:
       owner: itgcloud
