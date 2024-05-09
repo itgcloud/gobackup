@@ -6,9 +6,10 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/spf13/viper"
+
 	"github.com/itgcloud/gobackup/config"
 	"github.com/itgcloud/gobackup/logger"
-	"github.com/spf13/viper"
 )
 
 // Base compressor
@@ -26,7 +27,7 @@ type Compressor interface {
 }
 
 func (c *Base) archiveFilePath(ext string) string {
-	return filepath.Join(c.model.TempPath, time.Now().Format("2006.01.02.15.04.05")+ext)
+	return filepath.Join(c.model.TempPath, c.model.Name+"-"+time.Now().Format("2006-01-02-15-04-05")+ext)
 }
 
 func newBase(model config.ModelConfig) (base Base) {
