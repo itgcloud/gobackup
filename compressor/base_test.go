@@ -6,8 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/itgcloud/gobackup/config"
 	"github.com/longbridgeapp/assert"
+
+	"github.com/itgcloud/gobackup/config"
 )
 
 type Monkey struct {
@@ -20,8 +21,12 @@ func (c Monkey) perform() (archivePath string, err error) {
 }
 
 func TestBase_archiveFilePath(t *testing.T) {
-	base := Base{}
-	prefixPath := path.Join(base.model.TempPath, time.Now().Format("2006.01.02.15.04"))
+	base := Base{
+		model: config.ModelConfig{
+			Name: "test",
+		},
+	}
+	prefixPath := path.Join(base.model.TempPath, "test-"+time.Now().Format("2006-01-02-15-04"))
 	assert.True(t, strings.HasPrefix(base.archiveFilePath(".tar"), prefixPath))
 	assert.True(t, strings.HasSuffix(base.archiveFilePath(".tar"), ".tar"))
 }
