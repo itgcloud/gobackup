@@ -37,10 +37,11 @@ var (
 )
 
 type WebConfig struct {
-	Host     string
-	Port     string
-	Username string
-	Password string
+	Host           string
+	Port           string
+	Username       string
+	Password       string
+	DisablePerform bool
 }
 
 type ScheduleConfig struct {
@@ -227,10 +228,12 @@ func loadConfig() error {
 	Web = WebConfig{}
 	viper.SetDefault("web.host", "127.0.0.1")
 	viper.SetDefault("web.port", 2703)
+	viper.SetDefault("web.disable_perform", false)
 	Web.Host = viper.GetString("web.host")
 	Web.Port = viper.GetString("web.port")
 	Web.Username = viper.GetString("web.username")
 	Web.Password = viper.GetString("web.password")
+	Web.DisablePerform = viper.GetBool("web.disable_perform")
 
 	UpdatedAt = time.Now()
 	logger.Infof("Config loaded, found %d models.", len(Models))

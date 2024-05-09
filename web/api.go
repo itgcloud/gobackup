@@ -118,7 +118,9 @@ func setupRouter(version string) *gin.Engine {
 	group.GET("/config", getConfig)
 	group.GET("/list", list)
 	group.GET("/download", download)
-	group.POST("/perform", perform)
+	if !config.Web.DisablePerform {
+		group.POST("/perform", perform)
+	}
 	group.GET("/log", log)
 	return r
 }
