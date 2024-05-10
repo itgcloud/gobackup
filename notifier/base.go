@@ -108,7 +108,7 @@ func Success(model config.ModelConfig) {
 		title = model.Notifiers["common"].Viper.GetString("title_success")
 	}
 
-	message := fmt.Sprintf("Backup of *%s* completed successfully at %s", model.Name, time.Now().Local())
+	message := fmt.Sprintf("Backup of *%s* completed successfully at %s", model.Name, time.Now().Local().Format(time.DateTime))
 	if model.Notifiers["common"].Viper.GetString("message_success") != "" {
 		message = model.Notifiers["common"].Viper.GetString("message_success")
 	}
@@ -122,7 +122,7 @@ func Failure(model config.ModelConfig, reason string) {
 		title = model.Notifiers["common"].Viper.GetString("title_failure")
 	}
 
-	message := fmt.Sprintf("Backup of *%s* failed at %s:\n----------------------------------------------\n%s", model.Name, time.Now().Local(), reason)
+	message := fmt.Sprintf("Backup of *%s* failed at %s:\n----------------------------------------------\n%s", model.Name, time.Now().Local().Format(time.DateTime), reason)
 	if model.Notifiers["common"].Viper.GetString("message_failure") != "" {
 		message = model.Notifiers["common"].Viper.GetString("message_failure")
 	}
