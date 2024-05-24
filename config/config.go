@@ -227,7 +227,7 @@ func loadConfig() error {
 
 	// Load web config
 	Web = WebConfig{}
-	viper.SetDefault("web.host", "127.0.0.1")
+	viper.SetDefault("web.host", "0.0.0.0")
 	viper.SetDefault("web.port", 2703)
 	viper.SetDefault("web.base_path", "")
 	viper.SetDefault("web.disable_perform", false)
