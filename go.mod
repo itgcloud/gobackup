@@ -4,8 +4,8 @@ go 1.22
 
 require (
 	cloud.google.com/go/storage v1.40.0
-	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.5.2
-	github.com/Azure/azure-sdk-for-go/sdk/storage/azblob v1.3.2
+	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.8.0
+	github.com/Azure/azure-sdk-for-go/sdk/storage/azblob v1.5.0
 	github.com/aws/aws-sdk-go v1.52.4
 	github.com/bramvdbogaerde/go-scp v1.4.0
 	github.com/cheggaaa/pb/v3 v3.1.5
@@ -61,8 +61,8 @@ require (
 	cloud.google.com/go v0.112.2 // indirect
 	cloud.google.com/go/compute/metadata v0.3.0 // indirect
 	cloud.google.com/go/iam v1.1.8 // indirect
-	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.11.1 // indirect
-	github.com/Azure/azure-sdk-for-go/sdk/internal v1.7.0 // indirect
+	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.16.0 // indirect
+	github.com/Azure/azure-sdk-for-go/sdk/internal v1.10.0 // indirect
 	github.com/AzureAD/microsoft-authentication-library-for-go v1.2.2 // indirect
 	github.com/bytedance/sonic v1.12.6 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect
