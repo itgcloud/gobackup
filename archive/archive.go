@@ -20,7 +20,13 @@ func Run(model config.ModelConfig) error {
 
 	if err := helper.MkdirP(model.DumpPath); err != nil {
 		logger.Errorf("Failed to mkdir dump path %s: %v", model.DumpPath, err)
+
 		return err
+	}
+
+	// Archive + compress with tar if compression is enabled
+	if model.CompressWith.Type != "" {
+		return nil
 	}
 
 	opts, err := options(model)
@@ -28,11 +34,16 @@ func Run(model config.ModelConfig) error {
 		return err
 	}
 
-	_, err = helper.Exec("tar", opts...)
-	return err
+	if _, err = helper.Exec("tar", opts...); err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func options(model config.ModelConfig) (opts []string, err error) {
+func options(model config.ModelConfig) ([]string, error) {
+	var opts []string
+
 	includes := model.Archive.GetStringSlice("includes")
 	includes = cleanPaths(includes)
 
@@ -65,9 +76,12 @@ func options(model config.ModelConfig) (opts []string, err error) {
 	return opts, nil
 }
 
-func cleanPaths(paths []string) (results []string) {
+func cleanPaths(paths []string) []string {
+	var results []string
+
 	for _, p := range paths {
 		results = append(results, filepath.Clean(p))
 	}
-	return
+
+	return results
 }
