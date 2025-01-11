@@ -17,7 +17,7 @@ require (
 	github.com/jlaffaye/ftp v0.2.0
 	github.com/joho/godotenv v1.5.1
 	github.com/longbridgeapp/assert v1.1.0
-	github.com/pkg/sftp v1.13.6
+	github.com/pkg/sftp v1.13.7
 	github.com/sevlyar/go-daemon v0.1.6
 	github.com/spf13/viper v1.19.0
 	github.com/studio-b12/gowebdav v0.9.0
