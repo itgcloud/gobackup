@@ -67,7 +67,7 @@ require (
 	github.com/bytedance/sonic v1.12.6 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
-	github.com/fsnotify/fsnotify v1.7.0
+	github.com/fsnotify/fsnotify v1.8.0
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/gin-contrib/static v1.1.3
 	github.com/gin-gonic/gin v1.10.0
