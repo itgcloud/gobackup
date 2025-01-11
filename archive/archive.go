@@ -24,8 +24,8 @@ func Run(model config.ModelConfig) error {
 		return err
 	}
 
-	// Archive + compress with tar if compression is enabled
-	if model.CompressWith.Type != "" {
+	// Archive + compress with tar in one step if compression is enabled and databases are not empty
+	if model.CompressWith.Type != "" && len(model.Databases) == 0 {
 		return nil
 	}
 

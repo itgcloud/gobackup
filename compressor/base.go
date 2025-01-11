@@ -30,19 +30,19 @@ func (c *Base) archiveFilePath(ext string) string {
 	return filepath.Join(c.model.TempPath, c.model.Name+"-"+time.Now().Format("2006-01-02-15-04-05")+ext)
 }
 
-func newBase(model config.ModelConfig) (base Base) {
-	base = Base{
+func newBase(model config.ModelConfig) Base {
+	base := Base{
 		name:  model.Name,
 		model: model,
 		viper: model.CompressWith.Viper,
 	}
-	return
+
+	return base
 }
 
 // Run compressor, return archive path
 func Run(model config.ModelConfig) (string, error) {
 	logger := logger.Tag("Compressor")
-
 	base := newBase(model)
 
 	var c Compressor
@@ -85,16 +85,28 @@ func Run(model config.ModelConfig) (string, error) {
 
 	logger.Info("=> Compress | " + model.CompressWith.Type)
 
-	// set workdir
-	if err := os.Chdir(filepath.Join(model.DumpPath, "../")); err != nil {
-		return "", fmt.Errorf("chdir to dump path: %s: %w", model.DumpPath, err)
+	if err := changeWorkDir(model); err != nil {
+		return "", err
 	}
 
 	archivePath, err := c.perform()
 	if err != nil {
 		return "", err
 	}
+
 	logger.Info("->", archivePath)
 
 	return archivePath, nil
+}
+
+func changeWorkDir(model config.ModelConfig) error {
+	if len(model.Databases) == 0 {
+		return nil
+	}
+
+	if err := os.Chdir(filepath.Join(model.DumpPath, "../")); err != nil {
+		return fmt.Errorf("chdir to dump path: %s: %w", model.DumpPath, err)
+	}
+
+	return nil
 }

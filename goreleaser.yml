@@ -24,6 +24,7 @@ brews:
       owner: itgcloud
       name: homebrew-tap
       token: "{{ .Env.GITHUB_TOKEN }}"
+    directory: Formula
     name: gobackup
     commit_author:
       name: Janos Miko
