@@ -48,16 +48,12 @@ func (m Model) Perform() (err error) {
 		m.after()
 	}()
 
-	err = database.Run(m.Config)
-	if err != nil {
+	if err = database.Run(m.Config); err != nil {
 		return
 	}
 
-	if m.Config.Archive != nil {
-		err = archive.Run(m.Config)
-		if err != nil {
-			return
-		}
+	if err = archive.Run(m.Config); err != nil {
+		return
 	}
 
 	// It always to use compressor, default use tar, even not enable compress.
@@ -86,13 +82,16 @@ func (m Model) Perform() (err error) {
 
 func (m Model) before() {
 	// Execute before_script
-	if len(m.Config.BeforeScript) > 0 {
-		logger.Info("Executing before_script...")
-		_, err := helper.ExecWithStdio(m.Config.BeforeScript, true)
-		if err != nil {
-			logger.Error(err)
-		}
+	if len(m.Config.BeforeScript) == 0 {
+		return
 	}
+
+	logger.Info("Executing before_script...")
+	if _, err := helper.ExecWithStdio(m.Config.BeforeScript, true); err != nil {
+		logger.Error(err)
+	}
+
+	return
 }
 
 // Cleanup model temp files
@@ -108,14 +107,16 @@ func (m Model) after() {
 		logger.Errorf("Cleanup temp dir %s error: %v", tempDir, err)
 	}
 
-	// Execute after_script
-	if len(m.Config.AfterScript) > 0 {
-		logger.Info("Executing after_script...")
-		_, err := helper.ExecWithStdio(m.Config.AfterScript, true)
-		if err != nil {
-			logger.Error(err)
-		}
+	if len(m.Config.AfterScript) == 0 {
+		return
 	}
+
+	logger.Info("Executing after_script...")
+	if _, err := helper.ExecWithStdio(m.Config.AfterScript, true); err != nil {
+		logger.Error(err)
+	}
+
+	return
 }
 
 // GetModelByName get model by name
@@ -124,18 +125,22 @@ func GetModelByName(name string) *Model {
 	if modelConfig == nil {
 		return nil
 	}
+
 	return &Model{
 		Config: *modelConfig,
 	}
 }
 
 // GetModels get models
-func GetModels() (models []*Model) {
+func GetModels() []*Model {
+	models := make([]*Model, 0, len(config.Models))
+
 	for _, modelConfig := range config.Models {
 		m := Model{
 			Config: modelConfig,
 		}
 		models = append(models, &m)
 	}
-	return
+
+	return models
 }
