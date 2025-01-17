@@ -42,6 +42,7 @@ func Run(model config.ModelConfig) error {
 }
 
 func options(model config.ModelConfig) ([]string, error) {
+	logger := logger.Tag("Archive")
 	var opts []string
 
 	includes := model.Archive.GetStringSlice("includes")

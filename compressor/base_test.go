@@ -6,13 +6,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/longbridgeapp/assert"
+	"github.com/spf13/viper"
+	"github.com/stretchr/testify/assert"
 
 	"github.com/itgcloud/gobackup/config"
 )
 
 type Monkey struct {
-	Base
+	*Base
 }
 
 func (c Monkey) perform() (archivePath string, err error) {
@@ -33,9 +34,13 @@ func TestBase_archiveFilePath(t *testing.T) {
 
 func TestBaseInterface(t *testing.T) {
 	model := config.ModelConfig{
-		Name: "TestMoneky",
+		Name:  "TestMonkey",
+		Viper: viper.New(),
 	}
-	base := newBase(model)
+	base, err := newBase(model)
+	if err != nil {
+		assert.FailNow(t, err.Error())
+	}
 	assert.Equal(t, base.name, model.Name)
 	assert.Equal(t, base.model, model)
 

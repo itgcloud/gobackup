@@ -30,22 +30,39 @@ func (c *Base) archiveFilePath(ext string) string {
 	return filepath.Join(c.model.TempPath, c.model.Name+"-"+time.Now().Format("2006-01-02-15-04-05")+ext)
 }
 
-func newBase(model config.ModelConfig) Base {
-	base := Base{
+// Run compressor, return archive path
+func Run(model config.ModelConfig) (string, error) {
+	base, err := newBase(model)
+	if err != nil {
+		return "", err
+	}
+
+	c := &Tar{base}
+
+	logger := logger.Tag("Compressor")
+	logger.Info("=> Compress | " + model.CompressWith.Type)
+
+	if err := changeWorkDir(model); err != nil {
+		return "", err
+	}
+
+	archivePath, err := c.perform()
+	if err != nil {
+		return "", err
+	}
+
+	logger.Info("->", archivePath)
+
+	return archivePath, nil
+}
+
+func newBase(model config.ModelConfig) (*Base, error) {
+	base := &Base{
 		name:  model.Name,
 		model: model,
 		viper: model.CompressWith.Viper,
 	}
 
-	return base
-}
-
-// Run compressor, return archive path
-func Run(model config.ModelConfig) (string, error) {
-	logger := logger.Tag("Compressor")
-	base := newBase(model)
-
-	var c Compressor
 	var ext, parallelProgram string
 	switch model.CompressWith.Type {
 	case "gz", "tgz", "taz", "tar.gz":
@@ -73,7 +90,7 @@ func Run(model config.ModelConfig) (string, error) {
 		ext = ".tar"
 		model.CompressWith.Type = "tar"
 	default:
-		return "", fmt.Errorf("Unsupported compress type: %s", model.CompressWith.Type)
+		return nil, fmt.Errorf("Unsupported compress type: %s", model.CompressWith.Type)
 	}
 
 	// save Extension
@@ -81,22 +98,8 @@ func Run(model config.ModelConfig) (string, error) {
 
 	base.ext = ext
 	base.parallelProgram = parallelProgram
-	c = &Tar{Base: base}
 
-	logger.Info("=> Compress | " + model.CompressWith.Type)
-
-	if err := changeWorkDir(model); err != nil {
-		return "", err
-	}
-
-	archivePath, err := c.perform()
-	if err != nil {
-		return "", err
-	}
-
-	logger.Info("->", archivePath)
-
-	return archivePath, nil
+	return base, nil
 }
 
 func changeWorkDir(model config.ModelConfig) error {

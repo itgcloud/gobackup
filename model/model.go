@@ -43,6 +43,7 @@ func (m Model) Perform() (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			m.after()
+			logger.Fatalf("PANIC: %v", r)
 		}
 
 		m.after()

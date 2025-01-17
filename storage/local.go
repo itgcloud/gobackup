@@ -50,6 +50,7 @@ func (s *Local) upload(fileKey string) (err error) {
 }
 
 func (s *Local) delete(fileKey string) (err error) {
+	logger := logger.Tag("Storage")
 	targetPath := filepath.Join(s.path, fileKey)
 	logger.Info("Deleting", targetPath)
 

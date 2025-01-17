@@ -9,6 +9,7 @@ import (
 	"github.com/cheggaaa/pb/v3"
 	"github.com/dustin/go-humanize"
 	"github.com/hako/durafmt"
+
 	"github.com/itgcloud/gobackup/logger"
 )
 
@@ -31,7 +32,6 @@ func NewProgressBar(myLogger logger.Logger, reader *os.File) ProgressBar {
 	bar := pb.ProgressBarTemplate(progressbarTemplate).Start64(fileLength)
 	bar.SetWidth(100)
 	bar.Set("time", time.Now().Format(logger.TimeFormat))
-	bar.Set("prefix", myLogger.Prefix())
 
 	multiReader := bar.NewProxyReader(reader)
 

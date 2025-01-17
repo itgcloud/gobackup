@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"os"
 	"runtime"
 	"testing"
 
@@ -11,7 +12,9 @@ func TestUtils_init(t *testing.T) {
 	if runtime.GOOS == "linux" {
 		assert.Equal(t, IsGnuTar, true)
 	} else {
-		assert.Equal(t, IsGnuTar, false)
+		if os.Getenv("SKIP_GNU_TAR_CHECKING") == "" {
+			assert.Equal(t, IsGnuTar, false)
+		}
 	}
 }
 

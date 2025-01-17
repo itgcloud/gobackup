@@ -111,8 +111,8 @@ type SubConfig struct {
 // Init
 // loadConfig from:
 // - ./gobackup.yml
-// - ~/.itgcloud/gobackup.yml
-// - /etc/itgcloud/gobackup.yml
+// - ~/.gobackup/gobackup.yml
+// - /etc/gobackup/gobackup.yml
 func Init(configFile string) error {
 	logger := logger.Tag("Config")
 
@@ -130,9 +130,9 @@ func Init(configFile string) error {
 
 		// ./gobackup.yml
 		viper.AddConfigPath(".")
-		// ~/.itgcloud/gobackup.yml
+		// ~/.gobackup/gobackup.yml
 		viper.AddConfigPath("$HOME/.gobackup") // call multiple times to add many search paths
-		// /etc/itgcloud/gobackup.yml
+		// /etc/gobackup/gobackup.yml
 		viper.AddConfigPath("/etc/gobackup/") // path to look for the config file in
 	}
 
@@ -247,6 +247,8 @@ func loadConfig() error {
 func loadModel(key string) (ModelConfig, error) {
 	var model ModelConfig
 	model.Name = key
+	v := viper.GetViper()
+	_ = v
 
 	workdir, _ := os.Getwd()
 
