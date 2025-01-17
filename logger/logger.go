@@ -3,168 +3,113 @@ package logger
 import (
 	"fmt"
 	"io"
-	"log"
 	"os"
+	"strings"
 	"time"
 
-	"github.com/fatih/color"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
 
 type Logger struct {
-	logFlag int
-	myLog   *log.Logger
+	zerolog.Logger
 }
 
 var (
-	_logFlag     = log.Ldate | log.Ltime
-	TimeFormat   = "2006/01/02 15:04:05"
-	_myLog       = log.New(&writer{os.Stdout, TimeFormat}, "", 0)
+	TimeFormat   = time.RFC3339
 	sharedLogger Logger
-	isTest       = os.Getenv("GO_ENV") == "test"
-	isDebug      = os.Getenv("DEBUG") == "true"
 )
 
-type writer struct {
-	io.Writer
-	timeFormat string
-}
-
-func (w writer) Write(b []byte) (n int, err error) {
-	return w.Writer.Write(append([]byte(time.Now().Format(w.timeFormat)+" "), b...))
-}
-
 func init() {
-	if isTest {
-		if err := os.MkdirAll("../log", 0777); err != nil {
-			log.Printf("create log dir failed: %v\n", err)
-		}
+	SetLogger("")
+}
 
-		logfile, _ := os.OpenFile("../log/test.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-		_myLog = log.New(logfile, "", _logFlag)
-	}
-	sharedLogger = newLogger()
+func isDebug() bool {
+	return os.Getenv("DEBUG") == "true"
 }
 
 func SetLogger(logPath string) {
-	logfile, _ := os.OpenFile(logPath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	multi := io.MultiWriter(logfile, os.Stdout)
-	_myLog = log.New(&writer{multi, TimeFormat}, "", 0)
-	sharedLogger = newLogger()
+	var w io.Writer
+	w = zerolog.ConsoleWriter{
+		Out:           os.Stdout,
+		TimeFormat:    TimeFormat,
+		PartsOrder:    []string{"time", "level", "tag", "message"},
+		FieldsExclude: []string{"tag"},
+	}
+
+	if logPath != "" {
+		logfile, _ := os.OpenFile(logPath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+		w = zerolog.MultiLevelWriter(logfile, w)
+	}
+
+	sharedLogger = newLogger(w)
 }
 
-func newLogger() Logger {
-	return Logger{_logFlag, _myLog}
+func newLogger(w io.Writer) Logger {
+	l := log.Output(w)
+	if isDebug() {
+		l = l.With().Caller().Logger()
+	}
+	return Logger{l}
 }
 
 func Tag(tag string) Logger {
-	return sharedLogger.Tag(color.CyanString(fmt.Sprintf("[%s] ", tag)))
-}
-
-func (logger Logger) Prefix() string {
-	return logger.myLog.Prefix()
-}
-
-func (logger Logger) Writer() io.Writer {
-	return logger.myLog.Writer()
+	return sharedLogger.Tag(fmt.Sprintf("[%s]", tag))
 }
 
 func (logger Logger) Tag(tag string) Logger {
-	logger.myLog.SetPrefix(tag)
-	return logger
-}
-
-func (logger Logger) log(v ...interface{}) {
-	logger.myLog.Print(v...)
-}
-
-func (logger Logger) logln(v ...interface{}) {
-	logger.myLog.Println(v...)
-}
-
-// Print log
-func (logger Logger) Print(v ...interface{}) {
-	logger.log(v...)
-}
-
-// Println log
-func (logger Logger) Println(v ...interface{}) {
-	logger.logln(v...)
-}
-
-// Printf log
-func (logger Logger) Printf(format string, v ...interface{}) {
-	logger.Print(fmt.Sprintf(format, v...))
+	return Logger{logger.With().Str("tag", tag).Logger()}
 }
 
 // Debug log
 func (logger Logger) Debug(v ...interface{}) {
-	if isDebug || isTest {
-		logger.logln("[debug] ", fmt.Sprint(v...))
-	}
+	logger.Logger.Debug().Msg(sprint(v))
 }
 
 // Debugf log
 func (logger Logger) Debugf(format string, v ...interface{}) {
-	logger.Debug(fmt.Sprintf(format, v...))
+	logger.Logger.Debug().Msgf(format, v...)
 }
 
 // Info log
 func (logger Logger) Info(v ...interface{}) {
-	logger.logln(v...)
+	a := sprint(v)
+	logger.Logger.Info().Msg(a)
 }
 
 // Infof log
 func (logger Logger) Infof(format string, v ...interface{}) {
-	logger.Info(fmt.Sprintf(format, v...))
+	logger.Logger.Info().Msgf(format, v...)
 }
 
 // Warn log
 func (logger Logger) Warn(v ...interface{}) {
-	c := color.YellowString(fmt.Sprint(v...))
-	logger.logln(c)
+	logger.Logger.Warn().Msgf(sprint(v))
 }
 
 // Warnf log
 func (logger Logger) Warnf(format string, v ...interface{}) {
-	logger.Warn(fmt.Sprintf(format, v...))
+	logger.Logger.Warn().Msgf(format, v...)
 }
 
 // Error log
 func (logger Logger) Error(v ...interface{}) {
-	c := color.RedString(fmt.Sprint(v...))
-	logger.logln(c)
+	logger.Logger.Error().Msg(sprint(v))
 }
 
 // Errorf log
 func (logger Logger) Errorf(format string, v ...interface{}) {
-	logger.Error(fmt.Sprintf(format, v...))
+	logger.Logger.Error().Msgf(format, v...)
 }
 
 // Fatal log
 func (logger Logger) Fatal(v ...interface{}) {
-	c := color.MagentaString(fmt.Sprint(v...))
-	logger.logln(c)
-	os.Exit(1)
+	logger.Logger.Fatal().Msg(sprint(v))
 }
 
 // Fatalf log
 func (logger Logger) Fatalf(format string, v ...interface{}) {
-	logger.Fatal(fmt.Sprintf(format, v...))
-}
-
-// Print log
-func Print(v ...interface{}) {
-	sharedLogger.Print(v...)
-}
-
-// Printf log
-func Printf(format string, v ...interface{}) {
-	sharedLogger.Printf(format, v...)
-}
-
-// Println log
-func Println(v ...interface{}) {
-	sharedLogger.Println(v...)
+	logger.Logger.Fatal().Msgf(format, v...)
 }
 
 // Debug log
@@ -172,29 +117,14 @@ func Debug(v ...interface{}) {
 	sharedLogger.Debug(v...)
 }
 
-// Debugf log
-func Debugf(format string, v ...interface{}) {
-	sharedLogger.Debugf(format, v...)
-}
-
 // Info log
 func Info(v ...interface{}) {
 	sharedLogger.Info(v...)
 }
 
-// Infof log
-func Infof(format string, v ...interface{}) {
-	sharedLogger.Infof(format, v...)
-}
-
 // Warn log
 func Warn(v ...interface{}) {
 	sharedLogger.Warn(v...)
-}
-
-// Warnf log
-func Warnf(format string, v ...interface{}) {
-	sharedLogger.Warnf(format, v...)
 }
 
 // Error log
@@ -212,7 +142,16 @@ func Fatal(v ...interface{}) {
 	sharedLogger.Fatal(v...)
 }
 
-// Fatalf log
-func Fatalf(format string, v ...interface{}) {
-	sharedLogger.Fatalf(format, v...)
+func sprint(v ...interface{}) string {
+	parts := make([]string, len(v))
+	for i, item := range v {
+		switch v := item.(type) {
+		case []interface{}:
+			// Recursively handle nested slices
+			parts[i] = sprint(v...)
+		default:
+			parts[i] = fmt.Sprint(item)
+		}
+	}
+	return strings.Join(parts, " ")
 }

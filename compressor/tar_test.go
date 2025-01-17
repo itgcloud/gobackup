@@ -101,7 +101,7 @@ func TestTar_options(t *testing.T) {
 			model.Archive.Set("excludes", tt.args.excludes)
 
 			tar := &Tar{
-				Base: Base{model: model},
+				&Base{model: model},
 			}
 			opts, err := tar.options("~/work/dir/archive.tar")
 			if tt.wantErr {
