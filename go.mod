@@ -8,7 +8,7 @@ require (
 	github.com/Azure/azure-sdk-for-go/sdk/storage/azblob v1.6.0
 	github.com/aws/aws-sdk-go v1.55.6
 	github.com/bramvdbogaerde/go-scp v1.5.0
-	github.com/cheggaaa/pb/v3 v3.1.5
+	github.com/cheggaaa/pb/v3 v3.1.6
 	github.com/dustin/go-humanize v1.0.1
 	github.com/go-co-op/gocron v1.37.0
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
