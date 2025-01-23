@@ -23,7 +23,7 @@ require (
 	github.com/studio-b12/gowebdav v0.10.0
 	github.com/urfave/cli/v2 v2.27.5
 	golang.org/x/crypto v0.32.0
-	google.golang.org/api v0.217.0
+	google.golang.org/api v0.218.0
 )
 
 require (
