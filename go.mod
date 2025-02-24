@@ -1,7 +1,6 @@
 module github.com/itgcloud/gobackup
 
 go 1.23
-
 require (
 	cloud.google.com/go/storage v1.50.0
 	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.8.2
@@ -22,7 +21,7 @@ require (
 	github.com/spf13/viper v1.19.0
 	github.com/studio-b12/gowebdav v0.10.0
 	github.com/urfave/cli/v2 v2.27.5
-	golang.org/x/crypto v0.33.0
+	golang.org/x/crypto v0.35.0
 	google.golang.org/api v0.221.0
 )
 
